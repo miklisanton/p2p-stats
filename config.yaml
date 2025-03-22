@@ -1,0 +1,4 @@
+db:
+  name: "p2p_stats.db"
+telegram:
+  token: ${BOT_TOKEN}
