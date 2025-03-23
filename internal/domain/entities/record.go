@@ -17,6 +17,8 @@ const (
 type Record struct {
     Id              uuid.UUID
     CreatedAt       time.Time
+    DeletedAt       *time.Time
+    Deleted         bool
     Type            RecordType
     USDTAmount      float64
     FiatAmount      float64
