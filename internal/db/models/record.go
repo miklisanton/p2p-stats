@@ -19,23 +19,10 @@ type Record struct {
     FiatCurrency    string              `db:"fiat_currency"`
 }
 
-type RecordUser struct {
-    Id              uuid.UUID           `db:"id"`
-    CreatedAt       time.Time           `db:"created_at"`
-    DeletedAt       sql.NullTime        `db:"deleted_at"`
-    Type            entities.RecordType `db:"type"`
-    USDTAmount      float64             `db:"usdt_amount"`
-    FiatAmount      float64             `db:"fiat_amount"`
-    FiatCurrency    string              `db:"fiat_currency"`
-    ChatID          int64               `db:"chat_id"`
-    Name            string              `db:"name"`
-    UserCreatedAt   time.Time           `db:"user_created_at"`
-}
-
 func ToDBRecord(record *entities.ValidatedRecord) *Record {
     return &Record{
         Id: record.Id,
-        UserID: record.User.ChatID,
+        UserID: record.UserID,
         CreatedAt: record.CreatedAt,
         Type: record.Type,
         USDTAmount: record.USDTAmount,
@@ -44,7 +31,7 @@ func ToDBRecord(record *entities.ValidatedRecord) *Record {
     }
 }
 
-func FromDBRecord(record RecordUser) *entities.Record {
+func FromDBRecord(record Record) *entities.Record {
     var deletedAt *time.Time
     if record.DeletedAt.Valid {
         deletedAt = &record.DeletedAt.Time
@@ -52,11 +39,7 @@ func FromDBRecord(record RecordUser) *entities.Record {
 
     return &entities.Record{
         Id: record.Id,
-        User: entities.User{
-            ChatID: record.ChatID,
-            CreatedAt: record.UserCreatedAt,
-            Name: record.Name,
-        },
+        UserID: record.UserID,
         CreatedAt: record.CreatedAt,
         DeletedAt: deletedAt,
         Deleted: record.DeletedAt.Valid,

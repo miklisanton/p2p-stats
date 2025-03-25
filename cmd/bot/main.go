@@ -1,14 +1,17 @@
 package main
 
 import (
-    "github.com/jmoiron/sqlx"
-    "github.com/rs/zerolog"
-    "github.com/rs/zerolog/log"
-    "time"
-    "os"
-    "p2p-stats/internal/config"
-    "p2p-stats/internal/db/drivers"
-    "p2p-stats/internal/utils"
+	"os"
+	"p2p-stats/internal/config"
+	"p2p-stats/internal/db/drivers"
+	"p2p-stats/internal/db/repository"
+	"p2p-stats/internal/telegram"
+	"p2p-stats/internal/utils"
+	"time"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -46,6 +49,17 @@ func init() {
 }
 
 func main() {
-
+    from, to, err := utils.ParseList("11-11-2022 11-11-2023")
+    if err != nil {
+        log.Fatal().Err(err).Msg("Failed to parse list")
+    }
+    log.Info().Msgf("From: %v, To: %v", from, to)
+    defer db.Close()
+    // Create repositories
+    userRepo := repository.NewUserRepository(db)
+    recordRepo := repository.NewRecordRepository(db)
+    client := telegram.NewClient(cfg.Telegram.Token, recordRepo, userRepo)
+    // Start telegram client
+    client.Start()
 }
 

@@ -1,9 +1,9 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE users (
-    id BIGINT PRIMARY KEY,
+    chat_id BIGINT PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255)
 );
 CREATE TABLE records (
     id UUID PRIMARY KEY,
@@ -16,7 +16,7 @@ CREATE TABLE records (
     fiat_currency CHAR(3) NOT NULL,
     CONSTRAINT fk_user
         FOREIGN KEY (user_id)
-        REFERENCES users(id)
+        REFERENCES users(chat_id)
         ON DELETE CASCADE
 );
 -- +goose StatementEnd

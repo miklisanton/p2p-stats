@@ -2,6 +2,7 @@ package entities
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -23,10 +24,10 @@ type Record struct {
     USDTAmount      float64
     FiatAmount      float64
     FiatCurrency    string
-    User            User
+    UserID          int64
 }
 
-func NewRecord(t RecordType, usdtAmount, fiatAmount float64, fiatCurrency string, user ValidatedUser) *Record {
+func NewRecord(t RecordType, usdtAmount, fiatAmount float64, fiatCurrency string, userID int64) *Record {
     return &Record{
         Id: uuid.New(),
         CreatedAt: time.Now(),
@@ -34,11 +35,14 @@ func NewRecord(t RecordType, usdtAmount, fiatAmount float64, fiatCurrency string
         USDTAmount: usdtAmount,
         FiatAmount: fiatAmount,
         FiatCurrency: fiatCurrency,
-        User: user.User,
+        UserID: userID,
     }
 }
 
 func (r *Record) validate() error {
+    if r.UserID == 0 {
+        return errors.New("invalid user")
+    }
     if r.USDTAmount <= 0 {
         return errors.New("invalid USDT amount")
     }
@@ -49,4 +53,8 @@ func (r *Record) validate() error {
         return errors.New("invalid fiat currency")
     }
     return nil
+}
+
+func (r *Record) String() string {
+    return fmt.Sprintf("%s %.0fUSDT for %.0f%s", r.Type, r.USDTAmount, r.FiatAmount, r.FiatCurrency)
 }
